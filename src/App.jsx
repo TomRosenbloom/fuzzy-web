@@ -5,7 +5,6 @@ import Dropdown from "./Dropdown";
 
 
 function App() {
-  const [count, setCount] = useState(0);
 
   const [selectedBlockSize, setSelectedBlockSize] = useState("");
   const [selectedStartTime, setSelectedStartTime] = useState("");
@@ -16,7 +15,7 @@ function App() {
       <h1>Fuzzy</h1>
       <h2>Set up your schedule</h2>
       
-      <div style={{ display: "flex", alignItems: "center", }}>
+      <div style={{ display: "flex", alignItems: "center", width: "600px"}}>
         <div style={{ flex: 2}}>
           <p>Block size:</p>
         </div>
@@ -41,15 +40,12 @@ function App() {
       </div>  
 
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
         <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+          A paragraph in a "card" div
         </p>
       </div>
       <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
+        A paragraph in "read-the-docs" style
       </p>
     </>
   )
