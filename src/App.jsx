@@ -15,63 +15,40 @@ function App() {
   };
 
 
-  // const [error, setError] = useState("");
-  // const [submittedValue, setSubmittedValue] = useState("");
-
-  // const handleChange = (event) => {
-  //   const value = event.target.value;
-    
-  //   // Allow only numbers (empty string is also allowed for backspace)
-  //   if (value === "" || /^\d+$/.test(value)) {
-  //     setFuzziness(value);
-  //     setError(""); // clear error
-  //   }   
-  // };
-    
-  // const handleSubmit = () => {
-  //   if (fuzziness === "") {
-  //     setError("Please enter a number");
-  //   } else {
-  //     setSubmittedValue(fuzziness);
-  //     setError("");
-  //   }
-  // };
-
-
   return (
-    <div style={{width: "600px"}}>
+    <div className="container">
       <h1>Fuzzy</h1>
       <h2>Set up your schedule</h2>
       
-      <div style={{ display: "flex", alignItems: "center"}}>
-        <div style={{ flex: 2}}>
+      <div className="row">
+        <div className="label">
           <p>Block size:</p>
         </div>
-        <div style={{ flex: 1}}>
+        <div className="input">
           <Dropdown options={["30 minutes", "1 hour", "2 hours"]} onSelect={setSelectedBlockSize} />
         </div>
-        <div style={{ flex: 4}}>
+        <div className="output">
           {selectedBlockSize && <p>You selected: {selectedBlockSize}</p>}
         </div>
       </div>      
       
-      <div style={{ display: "flex", alignItems: "center", }}>
-        <div style={{ flex: 2}}>
+      <div className="row">
+        <div className="label">
           <p>Start time:</p>
         </div>
-        <div style={{ flex: 1}}>
+        <div className="input">
           <Dropdown options={["8:00 AM", "9:00 AM", "10:00 AM"]} onSelect={setSelectedStartTime} />
         </div>
-        <div style={{ flex: 4}}>
+        <div className="output">
           {selectedStartTime && <p>You selected: {selectedStartTime}</p>}
         </div>
       </div>  
 
-      <div style={{ display: "flex", alignItems: "center", }}>
-        <div style={{ flex: 2}}>
+      <div className="row">
+        <div className="label">
           <p>Fuzziness:</p>
         </div>
-        <div style={{ flex: 1}}>
+        <div className="input">
           <input
             type="range"
             min="0"
@@ -81,7 +58,7 @@ function App() {
             onChange={handleChange}
           />
         </div>
-        <div style={{ flex: 4}}>
+        <div className="output">
           {fuzziness && <p>You entered: {fuzziness}</p>}
         </div>
       </div>  
