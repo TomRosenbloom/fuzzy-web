@@ -9,13 +9,36 @@ function App() {
   const [selectedBlockSize, setSelectedBlockSize] = useState("");
   const [selectedStartTime, setSelectedStartTime] = useState("");
 
+  const [fuzziness, setFuzziness] = useState("");
+  const [error, setError] = useState("");
+  const [submittedValue, setSubmittedValue] = useState("");
+
+  const handleChange = (event) => {
+    const value = event.target.value;
+    
+    // Allow only numbers (empty string is also allowed for backspace)
+    if (value === "" || /^\d+$/.test(value)) {
+      setFuzziness(value);
+      setError(""); // clear error
+    }   
+  };
+    
+  const handleSubmit = () => {
+    if (fuzziness === "") {
+      setError("Please enter a number");
+    } else {
+      setSubmittedValue(fuzziness);
+      setError("");
+    }
+  };
+
 
   return (
-    <>
+    <div style={{width: "600px"}}>
       <h1>Fuzzy</h1>
       <h2>Set up your schedule</h2>
       
-      <div style={{ display: "flex", alignItems: "center", width: "600px"}}>
+      <div style={{ display: "flex", alignItems: "center"}}>
         <div style={{ flex: 2}}>
           <p>Block size:</p>
         </div>
@@ -39,7 +62,27 @@ function App() {
         </div>
       </div>  
 
-    </>
+      <div style={{ display: "flex", alignItems: "center", }}>
+        <div style={{ flex: 2}}>
+          <p>Fuzziness:</p>
+        </div>
+        <div style={{ flex: 1}}>
+          <input 
+            type="text" 
+            value={fuzziness} 
+            onChange={handleChange} 
+            placeholder="Enter a number..."
+          />
+          <button onClick={handleSubmit}>OK</button>
+            {/* Error message */}
+            {error && <p style={{ color: "red" }}>{error}</p>}
+        </div>
+        <div style={{ flex: 4}}>
+          {fuzziness && <p>You entered: {fuzziness}</p>}
+        </div>
+      </div>  
+
+    </div>
   )
 }
 
