@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 
 import Dropdown from "./Dropdown"; 
+import FuzzinessSlider from './FuzzinessSlider';
 
 
 function App() {
@@ -10,7 +11,8 @@ function App() {
   const [selectedStartTime, setSelectedStartTime] = useState("");
 
   const [fuzziness, setFuzziness] = useState(30);
-  const handleChange = (event) => {
+
+  const handleFuzzinessChange = (event) => {
     setFuzziness(Number(event.target.value)); // Convert string to number
   };
 
@@ -49,14 +51,7 @@ function App() {
           <p>Fuzziness:</p>
         </div>
         <div className="input">
-          <input
-            type="range"
-            min="0"
-            max="60"
-            step="5"
-            value={fuzziness}
-            onChange={handleChange}
-          />
+          <FuzzinessSlider value={fuzziness} onChange={handleFuzzinessChange} />
         </div>
         <div className="output">
           {fuzziness && <p>You entered: {fuzziness}</p>}
