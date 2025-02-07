@@ -39,14 +39,6 @@ function App() {
         </div>
       </div>  
 
-      <div className="card">
-        <p>
-          A paragraph in a "card" div
-        </p>
-      </div>
-      <p className="read-the-docs">
-        A paragraph in "read-the-docs" style
-      </p>
     </>
   )
 }
