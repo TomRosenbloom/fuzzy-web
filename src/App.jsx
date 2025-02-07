@@ -9,28 +9,33 @@ function App() {
   const [selectedBlockSize, setSelectedBlockSize] = useState("");
   const [selectedStartTime, setSelectedStartTime] = useState("");
 
-  const [fuzziness, setFuzziness] = useState("");
-  const [error, setError] = useState("");
-  const [submittedValue, setSubmittedValue] = useState("");
-
+  const [fuzziness, setFuzziness] = useState(30);
   const handleChange = (event) => {
-    const value = event.target.value;
-    
-    // Allow only numbers (empty string is also allowed for backspace)
-    if (value === "" || /^\d+$/.test(value)) {
-      setFuzziness(value);
-      setError(""); // clear error
-    }   
+    setFuzziness(Number(event.target.value)); // Convert string to number
   };
+
+
+  // const [error, setError] = useState("");
+  // const [submittedValue, setSubmittedValue] = useState("");
+
+  // const handleChange = (event) => {
+  //   const value = event.target.value;
     
-  const handleSubmit = () => {
-    if (fuzziness === "") {
-      setError("Please enter a number");
-    } else {
-      setSubmittedValue(fuzziness);
-      setError("");
-    }
-  };
+  //   // Allow only numbers (empty string is also allowed for backspace)
+  //   if (value === "" || /^\d+$/.test(value)) {
+  //     setFuzziness(value);
+  //     setError(""); // clear error
+  //   }   
+  // };
+    
+  // const handleSubmit = () => {
+  //   if (fuzziness === "") {
+  //     setError("Please enter a number");
+  //   } else {
+  //     setSubmittedValue(fuzziness);
+  //     setError("");
+  //   }
+  // };
 
 
   return (
@@ -67,15 +72,14 @@ function App() {
           <p>Fuzziness:</p>
         </div>
         <div style={{ flex: 1}}>
-          <input 
-            type="text" 
-            value={fuzziness} 
-            onChange={handleChange} 
-            placeholder="Enter a number..."
+          <input
+            type="range"
+            min="0"
+            max="60"
+            step="5"
+            value={fuzziness}
+            onChange={handleChange}
           />
-          <button onClick={handleSubmit}>OK</button>
-            {/* Error message */}
-            {error && <p style={{ color: "red" }}>{error}</p>}
         </div>
         <div style={{ flex: 4}}>
           {fuzziness && <p>You entered: {fuzziness}</p>}
