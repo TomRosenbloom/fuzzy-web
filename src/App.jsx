@@ -3,6 +3,7 @@ import './App.css'
 
 import Dropdown from "./Dropdown"; 
 import FuzzinessSlider from './FuzzinessSlider';
+import OverlapSlider from './OverlapSlider';
 
 
 function App() {
@@ -11,9 +12,13 @@ function App() {
   const [selectedStartTime, setSelectedStartTime] = useState("");
 
   const [fuzziness, setFuzziness] = useState(30);
-
   const handleFuzzinessChange = (event) => {
     setFuzziness(Number(event.target.value)); // Convert string to number
+  };
+
+  const [overlap, setOverlap] = useState(0);
+  const handleOverlapChange = (event) => {
+    setOverlap(Number(event.target.value));
   };
 
 
@@ -55,6 +60,18 @@ function App() {
         </div>
         <div className="output">
           {fuzziness && <p>You entered: {fuzziness}</p>}
+        </div>
+      </div>  
+
+      <div className="row">
+        <div className="label">
+          <p>Overlap:</p>
+        </div>
+        <div className="input">
+          <OverlapSlider value={overlap} onChange={handleOverlapChange} />
+        </div>
+        <div className="output">
+          {overlap && <p>You entered: {overlap}</p>}
         </div>
       </div>  
 
