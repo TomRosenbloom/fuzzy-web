@@ -3,8 +3,7 @@ import { useState } from "react";
 export default function ItemManager() {
   const [tempItem, setTempItem] = useState({
     name: "",
-    color: "red",
-    icon: "⭐",
+    color: "red"
   });
 
   const [items, setItems] = useState([]); // Stores multiple saved items
@@ -21,7 +20,7 @@ export default function ItemManager() {
     }
 
     setItems((prevItems) => [...prevItems, tempItem]); // Add new item to array
-    setTempItem({ name: "", color: "red", icon: "⭐" }); // Reset input fields
+    setTempItem({ name: "", color: "red" }); // Reset input fields
   };
 
   return (
@@ -47,17 +46,6 @@ export default function ItemManager() {
           <option value="blue">Blue</option>
           <option value="green">Green</option>
           <option value="yellow">Yellow</option>
-        </select>
-      </label>
-
-      {/* Icon Dropdown */}
-      <label>
-        Icon:
-        <select name="icon" value={tempItem.icon} onChange={handleChange}>
-          <option value="⭐">⭐ Star</option>
-          <option value="🔥">🔥 Fire</option>
-          <option value="💎">💎 Diamond</option>
-          <option value="🎵">🎵 Music</option>
         </select>
       </label>
 
