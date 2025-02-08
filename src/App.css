@@ -27,3 +27,13 @@
 .output {
   flex: 4;
 }
+
+.whole-row {
+  flex: 7;
+}
+
+ul.activities {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}

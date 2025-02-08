@@ -4,7 +4,7 @@ import './App.css'
 import Dropdown from "./Dropdown"; 
 import FuzzinessSlider from './FuzzinessSlider';
 import OverlapSlider from './OverlapSlider';
-import ItemManager from './BlockTypeManager';
+import ItemManager from './ActivityTypeManager';
 
 
 function App() {
@@ -79,7 +79,9 @@ function App() {
       </div>  
 
       <div className="row">
+        <div className="whole-row">
           <ItemManager />
+        </div>
       </div>
 
     </div>
