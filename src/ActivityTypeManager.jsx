@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function ItemManager() {
   const [tempItem, setTempItem] = useState({
@@ -7,6 +7,9 @@ export default function ItemManager() {
   });
 
   const [items, setItems] = useState([]); // Stores multiple saved items
+
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const names = ["Work", "Play", "Eat", "Sleep"];
   const colors = [
@@ -18,20 +21,36 @@ export default function ItemManager() {
     { name: "#89778F", value: "#89778F" }
   ];
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  const handleChange = (name, value) => {
     setTempItem((prevItem) => ({ ...prevItem, [name]: value }));
+    // Close dropdown after selection using a short delay
+    setTimeout(() => setDropdownOpen(false), 0);
   };
 
   const handleSave = () => {
+    if (!tempItem.color) {
+      alert("Please select a color before saving!");
+      return;
+    }
     setItems((prevItems) => [...prevItems, tempItem]); // Add new item to array
-    setTempItem({ name: "Work", color: "red" }); // Reset input fields
+    setTempItem({ name: "Work", color: "" }); // Reset input fields
   };
 
   const handleDelete = (index) => {
     setItems((prevItems) => prevItems.filter((_, i) => i !== index)); // Remove item by index
   };  
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setDropdownOpen(false);
+        }
+      };
+  
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
   return (
     <div>
@@ -50,7 +69,7 @@ export default function ItemManager() {
       </label>
 
       {/* Color Dropdown with Swatches */}
-      <label>
+      {/* <label>
         Color:
         <select name="color" value={tempItem.color} onChange={handleChange}>
           <option value="" disabled hidden>
@@ -65,10 +84,61 @@ export default function ItemManager() {
                 //color: color.value === "yellow" ? "black" : "white", // this was for avoiding contrast problems with text
               }}
             >
-              {color.name} {/* Fake bullet for swatch effect */}
+              {color.name} { }
             </option>
           ))}
         </select>
+      </label> */}
+
+      {/* Custom Color Dropdown */}
+      <label>
+        Color:
+        <div style={{ position: "relative", display: "inline-block" }} ref={dropdownRef}>
+          <button
+            onClick={() => setDropdownOpen((prev) => !prev)}
+            style={{
+              backgroundColor: tempItem.color || "#ccc",
+              color: tempItem.color === "yellow" ? "black" : "white",
+              border: "1px solid #000",
+              padding: "5px 10px",
+              cursor: "pointer",
+              width: "120px",
+              textAlign: "left",
+            }}
+          >
+            {tempItem.color ? "● Selected" : "Select Color"}
+          </button>
+
+          {isDropdownOpen && (
+            <div
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: 0,
+                backgroundColor: "#fff",
+                border: "1px solid #ccc",
+                width: "120px",
+                zIndex: 10,
+              }}
+            >
+              {colors.map((color) => (
+                <div
+                  key={color.value}
+                  onClick={() => handleChange("color", color.value)}
+                  style={{
+                    backgroundColor: color.value,
+                    color: color.value === "yellow" ? "black" : "white",
+                    padding: "5px",
+                    cursor: "pointer",
+                    textAlign: "center",
+                  }}
+                >
+                  {color.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </label>
 
       {/* Save Button */}
