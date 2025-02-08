@@ -8,8 +8,8 @@ export default function ItemManager() {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const names = ["Work", "Play", "Eat", "Sleep"];
-  const colors = [
+  const allNames = ["Work", "Play", "Eat", "Sleep"];
+  const allColors = [
     { name: "#3D5A5E", value: "#3D5A5E" },
     { name: "#DB7A2A", value: "#DB7A2A" },
     { name: "#2CC2DB", value: "#2CC2DB" },
@@ -17,6 +17,15 @@ export default function ItemManager() {
     { name: "#AF2CD", value: "#AF2CDB" },
     { name: "#89778F", value: "#89778F" }
   ];
+
+  // Get lists of used names and colors
+  const usedNames = items.map((item) => item.name);
+  const usedColors = items.map((item) => item.color);
+
+  // Remove already selected names/colors from available options
+  const availableNames = allNames.filter((name) => !usedNames.includes(name));
+  const availableColors = allColors.filter((color) => !usedColors.includes(color.value));
+
 
   const handleChange = (name, value) => {
     setTempItem((prevItem) => ({ ...prevItem, [name]: value }));
@@ -56,17 +65,13 @@ export default function ItemManager() {
       {/* Name Dropdown */}
       <label>
         Name:
-        <select 
-          name="name" 
-          value={tempItem.name} 
-          onChange={(e) => handleChange("name", e.target.value)}
-          >
+        <select name="name" value={tempItem.name} onChange={(e) => handleChange("name", e.target.value)}>
           <option value="" disabled hidden>
             Select name
           </option>
-          {names.map((name) => (
-            <option key={name} value={name}>
-              {name}
+          {allNames.map((name) => (
+            <option key={name} value={name} disabled={usedNames.includes(name)}>
+              {name} {usedNames.includes(name) ? "(Used)" : ""}
             </option>
           ))}
         </select>
@@ -103,7 +108,7 @@ export default function ItemManager() {
                 zIndex: 10,
               }}
             >
-              {colors.map((color) => (
+              {allColors.map((color) => (
                 <div
                   key={color.value}
                   onClick={() => handleChange("color", color.value)}
@@ -124,7 +129,7 @@ export default function ItemManager() {
       </label>
 
       {/* Save Button */}
-      <button onClick={handleSave}>Save Item</button>
+      <button onClick={handleSave} disabled={!tempItem.name || !tempItem.color}>Save</button>
 
       <h3>Saved activity types</h3>
       {items.length === 0 ? (
