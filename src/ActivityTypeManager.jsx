@@ -1,10 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
 export default function ItemManager() {
-  const [tempItem, setTempItem] = useState({
-    name: "Work", // default value
-    color: ""
-  });
+  const [tempItem, setTempItem] = useState({name: "",color: ""});
 
   const [items, setItems] = useState([]); // Stores multiple saved items
 
@@ -33,7 +30,7 @@ export default function ItemManager() {
       return;
     }
     setItems((prevItems) => [...prevItems, tempItem]); // Add new item to array
-    setTempItem({ name: "Work", color: "" }); // Reset input fields
+    setTempItem({ name: "", color: "" }); // Reset input fields
   };
 
   const handleDelete = (index) => {
@@ -59,7 +56,14 @@ export default function ItemManager() {
       {/* Name Dropdown */}
       <label>
         Name:
-        <select name="name" value={tempItem.name} onChange={handleChange}>
+        <select 
+          name="name" 
+          value={tempItem.name} 
+          onChange={(e) => handleChange("name", e.target.value)}
+          >
+          <option value="" disabled hidden>
+            Select name
+          </option>
           {names.map((name) => (
             <option key={name} value={name}>
               {name}
@@ -67,28 +71,6 @@ export default function ItemManager() {
           ))}
         </select>
       </label>
-
-      {/* Color Dropdown with Swatches */}
-      {/* <label>
-        Color:
-        <select name="color" value={tempItem.color} onChange={handleChange}>
-          <option value="" disabled hidden>
-            Select Color
-          </option>
-          {colors.map((color) => (
-            <option
-              key={color.value}
-              value={color.value}
-              style={{
-                backgroundColor: color.value,
-                //color: color.value === "yellow" ? "black" : "white", // this was for avoiding contrast problems with text
-              }}
-            >
-              {color.name} { }
-            </option>
-          ))}
-        </select>
-      </label> */}
 
       {/* Custom Color Dropdown */}
       <label>
