@@ -4,6 +4,7 @@ import './App.css'
 import Dropdown from "./Dropdown"; 
 import FuzzinessSlider from './FuzzinessSlider';
 import OverlapSlider from './OverlapSlider';
+import ItemManager from './BlockTypeManager';
 
 
 function App() {
@@ -20,6 +21,8 @@ function App() {
   const handleOverlapChange = (event) => {
     setOverlap(Number(event.target.value));
   };
+
+  // bit of repitition going on here - is it better to use a 'custom hook' with a generic slider component?
 
 
   return (
@@ -59,7 +62,7 @@ function App() {
           <FuzzinessSlider value={fuzziness} onChange={handleFuzzinessChange} />
         </div>
         <div className="output">
-          {fuzziness && <p>You entered: {fuzziness}</p>}
+          <p>{fuzziness} minutes</p>
         </div>
       </div>  
 
@@ -71,9 +74,13 @@ function App() {
           <OverlapSlider value={overlap} onChange={handleOverlapChange} />
         </div>
         <div className="output">
-          {overlap && <p>You entered: {overlap}</p>}
+          <p>{overlap} minutes</p>
         </div>
       </div>  
+
+      <div className="row">
+          <ItemManager />
+      </div>
 
     </div>
   )
