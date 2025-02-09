@@ -21,17 +21,19 @@ export default function ItemManager() {
   const usedColors = items.map((item) => item.color);
 
   const handleChange = (name, value) => {
-    setTempItem((prevItem) => ({ ...prevItem, [name]: value }));
+    const updatedItem = { ...tempItem, [name]: value }; // ✅ Update temp item
+    setTempItem(updatedItem);
+  
+    if (updatedItem.name && updatedItem.color) {
+      saveItem(updatedItem); // ✅ Auto-save when both name & color are selected
+    }
+  
     setTimeout(() => setDropdownOpen(false), 0);
   };
 
-  const handleSave = () => {
-    if (!tempItem.color) {
-      alert("Please select a color before saving!");
-      return;
-    }
-    setItems((prevItems) => [...prevItems, tempItem]);
-    setTempItem({ name: "", color: "" });
+  const saveItem = (item) => {
+    setItems((prevItems) => [...prevItems, item]);
+    setTempItem({ name: "", color: "" }); // Reset selection
   };
 
   const handleDelete = (index) => {
@@ -49,7 +51,7 @@ export default function ItemManager() {
   }, []);
 
   return (
-    <div className="container">
+    <div className="im-container">
       <h2>Create your activities</h2>
       <div className="form-group">
         {/* Name Dropdown */}
@@ -59,7 +61,7 @@ export default function ItemManager() {
           </option>
           {allNames.map((name) => (
             <option key={name} value={name} disabled={usedNames.includes(name)}>
-              {name} {usedNames.includes(name) ? "(Used)" : ""}
+              {name}
             </option>
           ))}
         </select>
@@ -84,10 +86,7 @@ export default function ItemManager() {
           )}
         </div>
 
-        {/* Save Button */}
-        <button className="save-btn" onClick={handleSave} disabled={!tempItem.name || !tempItem.color}>
-          Save
-        </button>
+
       </div>
 
       {/* Saved Items List */}
