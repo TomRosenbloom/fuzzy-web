@@ -28,7 +28,7 @@ function App() {
   return (
     <div className="container">
       <h1>Fuzzy</h1>
-      <h2>Set up your schedule</h2>
+      <h2>Set up your schedule grid</h2>
       
       <div className="row">
         <div className="label">

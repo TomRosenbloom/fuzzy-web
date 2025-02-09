@@ -1,0 +1,91 @@
+/* Container */
+.container {
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Form Group */
+  .form-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  /* Dropdown */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-btn {
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    width: 120px;
+    height: 40px;
+    text-align: left;
+  }
+  
+  .dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    width: 120px;
+    z-index: 10;
+  }
+  
+  .dropdown-item {
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+    height: 20px;
+  }
+  
+  .dropdown-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  /* Buttons */
+  .save-btn {
+    padding: 10px 15px;
+    cursor: pointer;
+  }
+  
+  .save-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* .delete-btn {
+    margin-left: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  } */
+  
+  /* Saved Items */
+  .saved-items ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .saved-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 30px;
+    border-radius: 8px;
+    color: white;
+    text-align: center;
+    font-weight: 500;
+    font-size: 1em;
+    padding: 0.6em 1.2em;
+    margin-right: 5px;
+  }
