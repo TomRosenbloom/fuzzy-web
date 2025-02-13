@@ -6,6 +6,7 @@ export default function ItemManager() {
   const [items, setItems] = useState([]);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [customActivity, setCustomActivity] = useState('');
 
   const allNames = ["Work", "Play", "Eat", "Sleep"];
   const allColors = [
@@ -21,14 +22,18 @@ export default function ItemManager() {
   const usedColors = items.map((item) => item.color);
 
   const handleChange = (name, value) => {
-    const updatedItem = { ...tempItem, [name]: value }; // ✅ Update temp item
+    const updatedItem = { ...tempItem, [name]: value }; 
     setTempItem(updatedItem);
   
     if (updatedItem.name && updatedItem.color) {
-      saveItem(updatedItem); // ✅ Auto-save when both name & color are selected
+      saveItem(updatedItem);
     }
-  
-    setTimeout(() => setDropdownOpen(false), 0);
+
+    if (name === 'name') {  // Only open dropdown when activity name is selected
+      setDropdownOpen(true);
+    } else {
+      setTimeout(() => setDropdownOpen(false), 0);  // Keep existing close behavior for color selection
+    }
   };
 
   const saveItem = (item) => {
@@ -38,6 +43,20 @@ export default function ItemManager() {
 
   const handleDelete = (index) => {
     setItems((prevItems) => prevItems.filter((_, i) => i !== index));
+  };
+
+  const handleActivitySelect = (activity) => {
+    setTempItem({
+      name: activity,
+      color: ''
+    });
+    setDropdownOpen(true);  // Automatically open the dropdown
+  };
+
+  const handleActivityInput = (e) => {
+    const value = e.target.value;
+    setCustomActivity(value);
+    handleChange("name", value);
   };
 
   useEffect(() => {
@@ -54,44 +73,68 @@ export default function ItemManager() {
     <div className="im-container">
       <h2>Create your activities</h2>
       <div className="form-group">
-        {/* Name Dropdown */}
-        <select name="name" value={tempItem.name} onChange={(e) => handleChange("name", e.target.value)}>
-          <option value="" disabled hidden>
-            Select name
-          </option>
-          {allNames.map((name) => (
-            <option key={name} value={name} disabled={usedNames.includes(name)}>
-              {name}
-            </option>
-          ))}
-        </select>
-
+        {/* Replace select with input and datalist */}
+        <div className="activity-type-manager-input-container">
+          <input
+            list="activity-type-manager-activities"
+            name="activity-type-manager-name"
+            value={tempItem.name}
+            onChange={handleActivityInput}
+            onBlur={() => {
+              if (!tempItem.color && !tempItem.name) {  // Only clear if no color AND no name
+                setTempItem(prev => ({ ...prev, name: '' }));
+                setCustomActivity('');
+              }
+            }}
+            placeholder="Enter or select activity"
+            className="activity-type-manager-input"
+            autoComplete="off"
+          />
+          <datalist id="activity-type-manager-activities">
+            {allNames
+              .filter(name => !usedNames.includes(name))
+              .map((name) => (
+                <option key={name} value={name} />
+              ))}
+          </datalist>
+        </div>
         {/* Color Dropdown */}
         <div className="dropdown" ref={dropdownRef}>
-          <button className="dropdown-btn" onClick={() => setDropdownOpen((prev) => !prev)} style={{ backgroundColor: tempItem.color || "#ccc" }}>
-            {tempItem.color ? "" : "Select Colour"}
+          <button 
+            className="dropdown-btn" 
+            onClick={() => setDropdownOpen((prev) => !prev)} 
+            style={{ backgroundColor: tempItem.color || "#ccc" }}
+            disabled={!tempItem.name}
+          >
+            {tempItem.color ? "" : tempItem.name ? `Select colour for ${tempItem.name}` : "Select colour"}
           </button>
-
           {isDropdownOpen && (
             <div className="dropdown-menu">
-              {allColors.map((color) => (
-                <div
-                  key={color.value}
-                  className={`dropdown-item ${usedColors.includes(color.value) ? "disabled" : ""}`}
-                  onClick={() => !usedColors.includes(color.value) && handleChange("color", color.value)}
-                  style={{ backgroundColor: color.value }}
-                ></div>
-              ))}
+              {allColors
+                .filter(color => !usedColors.includes(color.value))
+                .map((color) => (
+                  <div
+                    key={color.value}
+                    className="dropdown-item"
+                    style={{ backgroundColor: color.value }}
+                    onClick={() => handleChange("color", color.value)}
+                  >
+                    <span className="color-hover-text">
+                      {tempItem.name}
+                    </span>
+                  </div>
+                ))}
             </div>
           )}
         </div>
-
 
       </div>
 
       {/* Saved Items List */}
       <div className="saved-items">
-        {items.length === 0 ? <p>No items saved yet.</p> : (
+        {items.length === 0 ? (
+          <p className="no-items-message">No activities created yet</p>
+        ) : (
           <ul>
             {items.map((item, index) => (
               <li key={index}>
