@@ -247,4 +247,43 @@
 .cell-menu-icon:hover::before {
   opacity: 1;
   visibility: visible;
+}
+
+.day-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.day-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.day-checkbox input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.day-checkbox span {
+  font-size: 14px;
+}
+
+.day-checkbox span.has-conflict {
+  color: #ff4444;
+}
+
+.warning-text {
+  color: #ff4444;
+  font-size: 0.9em;
+  margin-top: 8px;
+}
+
+.duplicate-btn:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
 } 

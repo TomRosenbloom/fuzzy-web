@@ -10,6 +10,8 @@ export default function TimeGrid({
 }) {
   const [assignments, setAssignments] = useState({});  // Store cell assignments
   const [contextMenu, setContextMenu] = useState(null);
+  const [duplicateWarning, setDuplicateWarning] = useState(null);
+  const [selectedDays, setSelectedDays] = useState({});
 
   // Add useEffect to watch for activity changes
   useEffect(() => {
@@ -171,19 +173,43 @@ export default function TimeGrid({
     const sourceKey = `${sourceDay}-${sourceTimeSlot}`;
     const sourceAssignment = assignments[sourceKey];
     
+    // Initialize selected days (all days except source day are selected)
+    const initialSelectedDays = daysOfWeek.reduce((acc, day) => {
+      acc[day] = day !== sourceDay;
+      return acc;
+    }, {});
+    setSelectedDays(initialSelectedDays);
+
+    // Show modal with day selection
+    setDuplicateWarning({
+      sourceDay,
+      sourceTimeSlot,
+      conflicts: daysOfWeek.filter(day => {
+        const targetKey = `${day}-${sourceTimeSlot}`;
+        return day !== sourceDay && assignments[targetKey];
+      })
+    });
+  };
+
+  const handleDuplicateConfirm = () => {
+    const { sourceDay, sourceTimeSlot } = duplicateWarning;
+    const sourceKey = `${sourceDay}-${sourceTimeSlot}`;
+    const sourceAssignment = assignments[sourceKey];
+    
     setAssignments(prev => {
       const newAssignments = { ...prev };
-      // Add the assignment to the same time slot for all days
-      daysOfWeek.forEach(day => {
-        const targetKey = `${day}-${sourceTimeSlot}`;
-        // Skip if there's already an assignment or if it's the source day
-        if (!newAssignments[targetKey] && day !== sourceDay) {
+      Object.entries(selectedDays).forEach(([day, isSelected]) => {
+        if (isSelected) {
+          const targetKey = `${day}-${sourceTimeSlot}`;
           newAssignments[targetKey] = sourceAssignment;
         }
       });
       return newAssignments;
     });
+    
+    setDuplicateWarning(null);
     setContextMenu(null);
+    setSelectedDays({});
   };
 
   // Close context menu when clicking outside
@@ -275,13 +301,68 @@ export default function TimeGrid({
             className="context-menu-item"
             onClick={() => handleDuplicateToAllDays(contextMenu.day, contextMenu.timeSlot)}
           >
-            Duplicate to All Days
+            Duplicate to Other Days...
           </div>
           <div 
             className="context-menu-item"
             onClick={() => handleDeleteActivity(contextMenu.day, contextMenu.timeSlot)}
           >
             Delete Activity
+          </div>
+        </div>
+      )}
+
+      {/* Duplicate Selection Modal */}
+      {duplicateWarning && (
+        <div className="modal-overlay" onClick={() => setDuplicateWarning(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h3>Duplicate Activity</h3>
+            <p>Select days to duplicate this activity to:</p>
+            
+            <div className="day-selection">
+              {daysOfWeek.map(day => (
+                day !== duplicateWarning.sourceDay && (
+                  <label key={day} className="day-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={selectedDays[day]}
+                      onChange={e => setSelectedDays(prev => ({
+                        ...prev,
+                        [day]: e.target.checked
+                      }))}
+                    />
+                    <span className={assignments[`${day}-${duplicateWarning.sourceTimeSlot}`] ? 'has-conflict' : ''}>
+                      {day}
+                    </span>
+                  </label>
+                )
+              ))}
+            </div>
+
+            {duplicateWarning.conflicts.length > 0 && (
+              <p className="warning-text">
+                Note: Selected days with existing activities will be overwritten.
+              </p>
+            )}
+
+            <div className="modal-buttons">
+              <button 
+                className="cancel-btn"
+                onClick={() => {
+                  setDuplicateWarning(null);
+                  setSelectedDays({});
+                }}
+              >
+                Cancel
+              </button>
+              <button 
+                className="duplicate-btn"
+                onClick={handleDuplicateConfirm}
+                disabled={!Object.values(selectedDays).some(Boolean)}
+              >
+                Duplicate
+              </button>
+            </div>
           </div>
         </div>
       )}
