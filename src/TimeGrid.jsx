@@ -9,6 +9,7 @@ export default function TimeGrid({
   onActivitySelect 
 }) {
   const [assignments, setAssignments] = useState({});  // Store cell assignments
+  const [contextMenu, setContextMenu] = useState(null);
 
   // Convert blockSize to minutes for easier calculations
   const blockSizeInMinutes = {
@@ -49,6 +50,36 @@ export default function TimeGrid({
   const timeSlots = generateTimeSlots();
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+  const handleDragStart = (e, day, timeSlot) => {
+    const cellKey = `${day}-${timeSlot}`;
+    if (assignments[cellKey]) {
+      // Store both the cell key and the assignment data
+      e.dataTransfer.setData('application/json', JSON.stringify({
+        type: 'grid-cell',
+        cellKey: cellKey,
+        assignment: assignments[cellKey]
+      }));
+    }
+  };
+
+  const handleDragEnd = (e) => {
+    // If dropped outside a valid target, dropEffect will be "none"
+    if (e.dataTransfer.dropEffect === "none") {
+      try {
+        const data = JSON.parse(e.dataTransfer.getData('application/json'));
+        if (data.type === 'grid-cell') {
+          setAssignments(prev => {
+            const newAssignments = { ...prev };
+            delete newAssignments[data.cellKey];
+            return newAssignments;
+          });
+        }
+      } catch (error) {
+        console.error('Error handling drag end:', error);
+      }
+    }
+  };
+
   const handleDragOver = (e) => {
     e.preventDefault(); // Necessary to allow dropping
   };
@@ -58,59 +89,134 @@ export default function TimeGrid({
     const cellKey = `${day}-${timeSlot}`;
     
     try {
-      const item = JSON.parse(e.dataTransfer.getData('application/json'));
+      const data = JSON.parse(e.dataTransfer.getData('application/json'));
       
-      // Only assign if the cell is empty
-      if (!assignments[cellKey]) {
-        setAssignments(prev => ({
-          ...prev,
-          [cellKey]: item
-        }));
+      if (data.type === 'grid-cell') {
+        // Moving an existing assignment
+        if (data.cellKey !== cellKey && !assignments[cellKey]) {
+          setAssignments(prev => {
+            const newAssignments = { ...prev };
+            delete newAssignments[data.cellKey];
+            newAssignments[cellKey] = data.assignment;
+            return newAssignments;
+          });
+        }
+      } else {
+        // New assignment from activity list
+        if (!assignments[cellKey]) {
+          setAssignments(prev => ({
+            ...prev,
+            [cellKey]: data
+          }));
+        }
       }
     } catch (error) {
       console.error('Error parsing dropped data:', error);
     }
   };
 
+  const handleMenuClick = (e, day, timeSlot) => {
+    e.stopPropagation();  // Prevent cell click event
+    const cellKey = `${day}-${timeSlot}`;
+    if (assignments[cellKey]) {
+      setContextMenu({
+        x: e.clientX,
+        y: e.clientY,
+        day,
+        timeSlot
+      });
+    }
+  };
+
+  const handleDeleteActivity = (day, timeSlot) => {
+    const cellKey = `${day}-${timeSlot}`;
+    setAssignments(prev => {
+      const newAssignments = { ...prev };
+      delete newAssignments[cellKey];
+      return newAssignments;
+    });
+    setContextMenu(null);  // Close menu after action
+  };
+
+  // Close context menu when clicking outside
+  const handleClick = () => {
+    if (contextMenu) {
+      setContextMenu(null);
+    }
+  };
+
   return (
-    <div className="time-grid-container">
-      {/* Time column */}
-      <div className="time-column">
-        <div className="header-cell"></div>
-        {timeSlots.map((time, index) => (
-          <div key={index} className="time-cell">
-            {time}
+    <>
+      <div className="time-grid-container" onClick={handleClick}>
+        {/* Time column */}
+        <div className="time-column">
+          <div className="header-cell"></div>
+          {timeSlots.map((time, index) => (
+            <div key={index} className="time-cell">
+              {time}
+            </div>
+          ))}
+        </div>
+
+        {/* Day columns */}
+        {daysOfWeek.map((day, dayIndex) => (
+          <div key={dayIndex} className="day-column">
+            <div className="header-cell">{day}</div>
+            {timeSlots.map((timeSlot, slotIndex) => {
+              const cellKey = `${day}-${timeSlot}`;
+              const assignment = assignments[cellKey];
+              return (
+                <div 
+                  key={slotIndex} 
+                  className={`grid-cell ${assignment ? 'assigned' : ''}`}
+                  style={{
+                    backgroundColor: assignment ? assignment.color : undefined
+                  }}
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, day, timeSlot)}
+                  draggable={!!assignment}  // Only make it draggable if there's an assignment
+                  onDragStart={(e) => handleDragStart(e, day, timeSlot)}
+                  onDragEnd={handleDragEnd}
+                  data-time={timeSlot}
+                  data-day={day}
+                >
+                  {assignment && (
+                    <>
+                      <span className="cell-activity-name">{assignment.name}</span>
+                      <span 
+                        className="cell-menu-icon"
+                        onClick={(e) => handleMenuClick(e, day, timeSlot)}
+                      >
+                        ⋮
+                      </span>
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         ))}
       </div>
 
-      {/* Day columns */}
-      {daysOfWeek.map((day, dayIndex) => (
-        <div key={dayIndex} className="day-column">
-          <div className="header-cell">{day}</div>
-          {timeSlots.map((timeSlot, slotIndex) => {
-            const cellKey = `${day}-${timeSlot}`;
-            const assignment = assignments[cellKey];
-            return (
-              <div 
-                key={slotIndex} 
-                className={`grid-cell ${assignment ? 'assigned' : ''}`}
-                style={{
-                  backgroundColor: assignment ? assignment.color : undefined
-                }}
-                onDragOver={handleDragOver}
-                onDrop={(e) => handleDrop(e, day, timeSlot)}
-                data-time={timeSlot}
-                data-day={day}
-              >
-                {assignment && (
-                  <span className="cell-activity-name">{assignment.name}</span>
-                )}
-              </div>
-            );
-          })}
+      {/* Context Menu */}
+      {contextMenu && (
+        <div 
+          className="context-menu"
+          style={{
+            position: 'fixed',
+            top: contextMenu.y,
+            left: contextMenu.x,
+          }}
+        >
+          <div 
+            className="context-menu-item"
+            onClick={() => handleDeleteActivity(contextMenu.day, contextMenu.timeSlot)}
+          >
+            Delete Activity
+          </div>
+          {/* We can add more menu items here later */}
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 } 

@@ -63,11 +63,15 @@
 }
 
 .grid-cell.assigned {
-  cursor: not-allowed; /* Indicate cell is already taken */
+  cursor: grab;  /* Show grab cursor for assigned cells */
 }
 
-.grid-cell:not(.assigned):hover {
-  background-color: rgba(0, 0, 0, 0.05);
+.grid-cell.assigned:active {
+  cursor: grabbing;  /* Show grabbing cursor while dragging */
+}
+
+.grid-cell.assigned:hover {
+  opacity: 0.8;  /* Subtle hover effect */
 }
 
 .cell-activity-name {
@@ -80,6 +84,7 @@
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
   pointer-events: none;
   white-space: nowrap;
+  margin-right: 20px;
 }
 
 .saved-item {
@@ -113,4 +118,43 @@
 .day-column:nth-child(7),
 .day-column:nth-child(8) {
   background-color: rgba(0, 0, 0, 0.02);
+}
+
+.context-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  padding: 4px 0;
+  min-width: 150px;
+  z-index: 1000;
+}
+
+.context-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.context-menu-item:hover {
+  background-color: #f5f5f5;
+}
+
+.cell-menu-icon {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  cursor: pointer;
+  padding: 2px 4px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.grid-cell.assigned:hover .cell-menu-icon {
+  opacity: 1;
 } 
