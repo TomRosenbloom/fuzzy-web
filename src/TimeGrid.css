@@ -57,11 +57,37 @@
   height: 40px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.grid-cell:hover {
+.grid-cell.assigned {
+  cursor: not-allowed; /* Indicate cell is already taken */
+}
+
+.grid-cell:not(.assigned):hover {
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+.cell-activity-name {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 0.9em;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.saved-item {
+  cursor: grab;
+}
+
+.saved-item:active {
+  cursor: grabbing;
 }
 
 .grid-cell.current-time {

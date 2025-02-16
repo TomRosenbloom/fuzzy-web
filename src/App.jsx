@@ -23,6 +23,13 @@ function App() {
     setOverlap(Number(event.target.value));
   };
 
+  const [activities, setActivities] = useState([]);
+  const [selectedActivity, setSelectedActivity] = useState(null);
+
+  const handleActivitiesChange = (newActivities) => {
+    setActivities(newActivities);
+  };
+
   return (
     <div className="container">
       <h1>Fuzzy</h1>
@@ -78,7 +85,7 @@ function App() {
 
       <div className="row">
         <div className="whole-row">
-          <ItemManager />
+          <ItemManager onActivitiesChange={handleActivitiesChange} />
         </div>
       </div>
 
@@ -87,6 +94,9 @@ function App() {
           <TimeGrid 
             blockSize={selectedBlockSize} 
             startTime={selectedStartTime}
+            activities={activities}
+            selectedActivity={selectedActivity}
+            onActivitySelect={setSelectedActivity}
           />
         </div>
       </div>

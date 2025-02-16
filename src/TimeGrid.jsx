@@ -1,7 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './TimeGrid.css';
 
-export default function TimeGrid({ blockSize, startTime }) {
+export default function TimeGrid({ 
+  blockSize, 
+  startTime, 
+  activities, 
+  selectedActivity, 
+  onActivitySelect 
+}) {
+  const [assignments, setAssignments] = useState({});  // Store cell assignments
+
   // Convert blockSize to minutes for easier calculations
   const blockSizeInMinutes = {
     '30 minutes': 30,
@@ -41,6 +49,29 @@ export default function TimeGrid({ blockSize, startTime }) {
   const timeSlots = generateTimeSlots();
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
+  const handleDragOver = (e) => {
+    e.preventDefault(); // Necessary to allow dropping
+  };
+
+  const handleDrop = (e, day, timeSlot) => {
+    e.preventDefault();
+    const cellKey = `${day}-${timeSlot}`;
+    
+    try {
+      const item = JSON.parse(e.dataTransfer.getData('application/json'));
+      
+      // Only assign if the cell is empty
+      if (!assignments[cellKey]) {
+        setAssignments(prev => ({
+          ...prev,
+          [cellKey]: item
+        }));
+      }
+    } catch (error) {
+      console.error('Error parsing dropped data:', error);
+    }
+  };
+
   return (
     <div className="time-grid-container">
       {/* Time column */}
@@ -57,14 +88,27 @@ export default function TimeGrid({ blockSize, startTime }) {
       {daysOfWeek.map((day, dayIndex) => (
         <div key={dayIndex} className="day-column">
           <div className="header-cell">{day}</div>
-          {timeSlots.map((_, slotIndex) => (
-            <div 
-              key={slotIndex} 
-              className="grid-cell"
-              data-time={timeSlots[slotIndex]}
-              data-day={day}
-            />
-          ))}
+          {timeSlots.map((timeSlot, slotIndex) => {
+            const cellKey = `${day}-${timeSlot}`;
+            const assignment = assignments[cellKey];
+            return (
+              <div 
+                key={slotIndex} 
+                className={`grid-cell ${assignment ? 'assigned' : ''}`}
+                style={{
+                  backgroundColor: assignment ? assignment.color : undefined
+                }}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, day, timeSlot)}
+                data-time={timeSlot}
+                data-day={day}
+              >
+                {assignment && (
+                  <span className="cell-activity-name">{assignment.name}</span>
+                )}
+              </div>
+            );
+          })}
         </div>
       ))}
     </div>

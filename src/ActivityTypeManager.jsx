@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "./ActivityTypeManager.css"; // Import external CSS file
 
-export default function ItemManager() {
+export default function ItemManager({ onActivitiesChange }) {
   const [tempItem, setTempItem] = useState({ name: "", color: "" });
   const [items, setItems] = useState([]);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -37,12 +37,16 @@ export default function ItemManager() {
   };
 
   const saveItem = (item) => {
-    setItems((prevItems) => [...prevItems, item]);
-    setTempItem({ name: "", color: "" }); // Reset selection
+    const newItems = [...items, item];
+    setItems(newItems);
+    setTempItem({ name: "", color: "" });
+    onActivitiesChange(newItems);  // Notify parent of change
   };
 
   const handleDelete = (index) => {
-    setItems((prevItems) => prevItems.filter((_, i) => i !== index));
+    const newItems = items.filter((_, i) => i !== index);
+    setItems(newItems);
+    onActivitiesChange(newItems);  // Notify parent of change
   };
 
   const handleActivitySelect = (activity) => {
@@ -138,7 +142,16 @@ export default function ItemManager() {
           <ul>
             {items.map((item, index) => (
               <li key={index}>
-                <span className="saved-item" style={{ backgroundColor: item.color }}>{item.name}</span>
+                <span 
+                  className="saved-item" 
+                  style={{ backgroundColor: item.color }}
+                  draggable="true"
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('application/json', JSON.stringify(item));
+                  }}
+                >
+                  {item.name}
+                </span>
                 <button className="delete-btn" onClick={() => handleDelete(index)}>Delete</button>
               </li>
             ))}
