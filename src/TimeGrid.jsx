@@ -74,15 +74,17 @@ export default function TimeGrid({
   const timeSlots = generateTimeSlots();
   const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-  const handleDragStart = (e, day, timeSlot) => {
+  const handleDragStart = (e, day, timeSlot, isDuplicating) => {
     const cellKey = `${day}-${timeSlot}`;
     if (assignments[cellKey]) {
-      // Store both the cell key and the assignment data
-      e.dataTransfer.setData('application/json', JSON.stringify({
+      // Store whether Shift is pressed and the assignment data
+      const dragData = {
         type: 'grid-cell',
         cellKey: cellKey,
-        assignment: assignments[cellKey]
-      }));
+        assignment: assignments[cellKey],
+        isDuplicating: isDuplicating
+      };
+      e.dataTransfer.setData('application/json', JSON.stringify(dragData));
     }
   };
 
@@ -91,7 +93,7 @@ export default function TimeGrid({
     if (e.dataTransfer.dropEffect === "none") {
       try {
         const data = JSON.parse(e.dataTransfer.getData('application/json'));
-        if (data.type === 'grid-cell') {
+        if (data.type === 'grid-cell' && !data.isDuplicating) {
           setAssignments(prev => {
             const newAssignments = { ...prev };
             delete newAssignments[data.cellKey];
@@ -116,11 +118,14 @@ export default function TimeGrid({
       const data = JSON.parse(e.dataTransfer.getData('application/json'));
       
       if (data.type === 'grid-cell') {
-        // Moving an existing assignment
+        // Moving or duplicating an existing assignment
         if (data.cellKey !== cellKey && !assignments[cellKey]) {
           setAssignments(prev => {
             const newAssignments = { ...prev };
-            delete newAssignments[data.cellKey];
+            // Only remove the original if not duplicating
+            if (!data.isDuplicating) {
+              delete newAssignments[data.cellKey];
+            }
             newAssignments[cellKey] = data.assignment;
             return newAssignments;
           });
@@ -198,21 +203,36 @@ export default function TimeGrid({
                   }}
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, day, timeSlot)}
-                  draggable={!!assignment}  // Only make it draggable if there's an assignment
-                  onDragStart={(e) => handleDragStart(e, day, timeSlot)}
-                  onDragEnd={handleDragEnd}
                   data-time={timeSlot}
                   data-day={day}
                 >
                   {assignment && (
                     <>
                       <span className="cell-activity-name">{assignment.name}</span>
-                      <span 
-                        className="cell-menu-icon"
-                        onClick={(e) => handleMenuClick(e, day, timeSlot)}
+                      <div 
+                        className="cell-controls"
+                        style={{
+                          '--cell-color': assignment.color
+                        }}
                       >
-                        ⋮
-                      </span>
+                        <span 
+                          className="cell-handle move"
+                          draggable="true"
+                          onDragStart={(e) => handleDragStart(e, day, timeSlot, false)}
+                          title="Drag to move"
+                        />
+                        <span 
+                          className="cell-handle duplicate"
+                          draggable="true"
+                          onDragStart={(e) => handleDragStart(e, day, timeSlot, true)}
+                          title="Drag to duplicate"
+                        />
+                        <span 
+                          className="cell-menu-icon"
+                          onClick={(e) => handleMenuClick(e, day, timeSlot)}
+                          title="More options"
+                        />
+                      </div>
                     </>
                   )}
                 </div>

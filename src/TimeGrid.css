@@ -54,11 +54,14 @@
 }
 
 .grid-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
   height: 40px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
   transition: all 0.2s ease;
-  position: relative;
   overflow: hidden;
 }
 
@@ -75,16 +78,9 @@
 }
 
 .cell-activity-name {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 0.9em;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-  pointer-events: none;
-  white-space: nowrap;
-  margin-right: 20px;
+  flex-grow: 1;
+  text-align: center;
+  margin: 0;  /* Remove margin since we're using flex */
 }
 
 .saved-item {
@@ -141,20 +137,114 @@
   background-color: #f5f5f5;
 }
 
-.cell-menu-icon {
+.cell-controls {
   position: absolute;
-  top: 50%;
-  right: 4px;
-  transform: translateY(-50%);
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 16px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
   opacity: 0;
   transition: opacity 0.2s ease;
-  cursor: pointer;
-  padding: 2px 4px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(to right, transparent, var(--cell-color) 20%);
+  padding-left: 20px;
+  padding-right: 4px;
 }
 
-.grid-cell.assigned:hover .cell-menu-icon {
+.grid-cell.assigned:hover .cell-controls {
   opacity: 1;
+}
+
+.cell-handle {
+  position: relative;
+  cursor: grab;
+  padding: 2px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 18px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.cell-handle::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;  /* Quick fade in */
+  pointer-events: none;
+  margin-bottom: 4px;
+}
+
+.cell-handle:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cell-handle.move::after {
+  content: "≡";  /* Burger menu icon for move */
+  color: #555;
+}
+
+.cell-handle.duplicate::after {
+  content: "+";  /* Plus sign for duplicate */
+  color: #555;
+}
+
+.cell-menu-icon {
+  position: relative;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 18px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.cell-menu-icon::after {
+  content: "⚙";  /* Gear icon for menu */
+  color: #555;
+}
+
+.cell-menu-icon::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  font-size: 12px;
+  white-space: nowrap;
+  border-radius: 4px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease;  /* Quick fade in */
+  pointer-events: none;
+  margin-bottom: 4px;
+}
+
+.cell-menu-icon:hover::before {
+  opacity: 1;
+  visibility: visible;
 } 

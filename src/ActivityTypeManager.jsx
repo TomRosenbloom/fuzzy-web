@@ -63,6 +63,12 @@ export default function ItemManager({ onActivitiesChange }) {
       index,
       item: items[index]
     });
+    setItemContextMenu(null);  // Close context menu when showing warning
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteWarning(null);
+    setItemContextMenu(null);  // Ensure context menu is also closed
   };
 
   const confirmDelete = (index) => {
@@ -232,7 +238,7 @@ export default function ItemManager({ onActivitiesChange }) {
 
       {/* Delete Warning Modal */}
       {showDeleteWarning && (
-        <div className="modal-overlay" onClick={() => setShowDeleteWarning(null)}>
+        <div className="modal-overlay" onClick={handleCancelDelete}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <h3>Delete Activity</h3>
             <p>
@@ -242,7 +248,7 @@ export default function ItemManager({ onActivitiesChange }) {
             <div className="modal-buttons">
               <button 
                 className="cancel-btn"
-                onClick={() => setShowDeleteWarning(null)}
+                onClick={handleCancelDelete}
               >
                 Cancel
               </button>
