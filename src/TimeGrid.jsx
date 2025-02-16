@@ -167,6 +167,25 @@ export default function TimeGrid({
     setContextMenu(null);  // Close menu after action
   };
 
+  const handleDuplicateToAllDays = (sourceDay, sourceTimeSlot) => {
+    const sourceKey = `${sourceDay}-${sourceTimeSlot}`;
+    const sourceAssignment = assignments[sourceKey];
+    
+    setAssignments(prev => {
+      const newAssignments = { ...prev };
+      // Add the assignment to the same time slot for all days
+      daysOfWeek.forEach(day => {
+        const targetKey = `${day}-${sourceTimeSlot}`;
+        // Skip if there's already an assignment or if it's the source day
+        if (!newAssignments[targetKey] && day !== sourceDay) {
+          newAssignments[targetKey] = sourceAssignment;
+        }
+      });
+      return newAssignments;
+    });
+    setContextMenu(null);
+  };
+
   // Close context menu when clicking outside
   const handleClick = () => {
     if (contextMenu) {
@@ -254,11 +273,16 @@ export default function TimeGrid({
         >
           <div 
             className="context-menu-item"
+            onClick={() => handleDuplicateToAllDays(contextMenu.day, contextMenu.timeSlot)}
+          >
+            Duplicate to All Days
+          </div>
+          <div 
+            className="context-menu-item"
             onClick={() => handleDeleteActivity(contextMenu.day, contextMenu.timeSlot)}
           >
             Delete Activity
           </div>
-          {/* We can add more menu items here later */}
         </div>
       )}
     </>
