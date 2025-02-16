@@ -6,14 +6,16 @@
 }
 
 .container {
-  width: 600px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
   font-family: Arial, sans-serif;
 }
 
 .row {
   display: flex;
+  margin-bottom: 20px;
   align-items: center;
-  margin: 10px 0;
 }
 
 .label {
@@ -29,7 +31,9 @@
 }
 
 .whole-row {
-  flex: 7;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 ul.activities {

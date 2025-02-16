@@ -5,6 +5,7 @@ import Dropdown from "./Dropdown";
 import FuzzinessSlider from './FuzzinessSlider';
 import OverlapSlider from './OverlapSlider';
 import ItemManager from './ActivityTypeManager';
+import TimeGrid from './TimeGrid';
 
 
 function App() {
@@ -21,9 +22,6 @@ function App() {
   const handleOverlapChange = (event) => {
     setOverlap(Number(event.target.value));
   };
-
-  // bit of repitition going on here - is it better to use a 'custom hook' with a generic slider component?
-
 
   return (
     <div className="container">
@@ -81,6 +79,15 @@ function App() {
       <div className="row">
         <div className="whole-row">
           <ItemManager />
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="whole-row">
+          <TimeGrid 
+            blockSize={selectedBlockSize} 
+            startTime={selectedStartTime}
+          />
         </div>
       </div>
 
