@@ -7,6 +7,8 @@ export default function ItemManager({ onActivitiesChange }) {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const [customActivity, setCustomActivity] = useState('');
+  const [itemContextMenu, setItemContextMenu] = useState(null);
+  const [showDeleteWarning, setShowDeleteWarning] = useState(null);
 
   const allNames = ["Work", "Play", "Eat", "Sleep"];
   const allColors = [
@@ -28,12 +30,6 @@ export default function ItemManager({ onActivitiesChange }) {
     if (updatedItem.name && updatedItem.color) {
       saveItem(updatedItem);
     }
-
-    if (name === 'name') {  // Only open dropdown when activity name is selected
-      setDropdownOpen(true);
-    } else {
-      setTimeout(() => setDropdownOpen(false), 0);  // Keep existing close behavior for color selection
-    }
   };
 
   const saveItem = (item) => {
@@ -43,10 +39,38 @@ export default function ItemManager({ onActivitiesChange }) {
     onActivitiesChange(newItems);  // Notify parent of change
   };
 
+  const handleItemMenuClick = (e, item, index) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setItemContextMenu({
+      x: e.clientX,
+      y: e.clientY,
+      item,
+      index
+    });
+  };
+
+  const handleColorChange = (index, newColor) => {
+    const updatedItems = [...items];
+    updatedItems[index] = { ...updatedItems[index], color: newColor };
+    setItems(updatedItems);
+    onActivitiesChange(updatedItems);
+    setItemContextMenu(null);
+  };
+
   const handleDelete = (index) => {
+    setShowDeleteWarning({
+      index,
+      item: items[index]
+    });
+  };
+
+  const confirmDelete = (index) => {
     const newItems = items.filter((_, i) => i !== index);
     setItems(newItems);
-    onActivitiesChange(newItems);  // Notify parent of change
+    onActivitiesChange(newItems);
+    setShowDeleteWarning(null);
+    setItemContextMenu(null);
   };
 
   const handleActivitySelect = (activity) => {
@@ -74,7 +98,10 @@ export default function ItemManager({ onActivitiesChange }) {
   }, []);
 
   return (
-    <div className="im-container">
+    <div className="im-container" onClick={() => {
+      setItemContextMenu(null);
+      setShowDeleteWarning(null);
+    }}>
       <h2>Create your activities</h2>
       <div className="form-group">
         {/* Replace select with input and datalist */}
@@ -121,7 +148,11 @@ export default function ItemManager({ onActivitiesChange }) {
                     key={color.value}
                     className="dropdown-item"
                     style={{ backgroundColor: color.value }}
-                    onClick={() => handleChange("color", color.value)}
+                    onClick={(e) => {
+                      e.stopPropagation();  // Stop event bubbling
+                      handleChange("color", color.value);
+                      setDropdownOpen(false);  // Close dropdown
+                    }}
                   >
                     <span className="color-hover-text">
                       {tempItem.name}
@@ -151,13 +182,80 @@ export default function ItemManager({ onActivitiesChange }) {
                   }}
                 >
                   {item.name}
+                  <span 
+                    className="item-menu-icon"
+                    onClick={(e) => handleItemMenuClick(e, item, index)}
+                  >
+                    ⋮
+                  </span>
                 </span>
-                <button className="delete-btn" onClick={() => handleDelete(index)}>Delete</button>
               </li>
             ))}
           </ul>
         )}
       </div>
+
+      {/* Item Context Menu */}
+      {itemContextMenu && (
+        <div 
+          className="context-menu"
+          style={{
+            position: 'fixed',
+            top: itemContextMenu.y,
+            left: itemContextMenu.x,
+          }}
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="context-menu-item color-picker">
+            Change Color
+            <div className="color-options">
+              {allColors
+                .filter(color => !usedColors.includes(color.value) || color.value === itemContextMenu.item.color)
+                .map((color) => (
+                  <div
+                    key={color.value}
+                    className="color-option"
+                    style={{ backgroundColor: color.value }}
+                    onClick={() => handleColorChange(itemContextMenu.index, color.value)}
+                  />
+                ))}
+            </div>
+          </div>
+          <div 
+            className="context-menu-item"
+            onClick={() => handleDelete(itemContextMenu.index)}
+          >
+            Delete Activity
+          </div>
+        </div>
+      )}
+
+      {/* Delete Warning Modal */}
+      {showDeleteWarning && (
+        <div className="modal-overlay" onClick={() => setShowDeleteWarning(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h3>Delete Activity</h3>
+            <p>
+              Deleting "{showDeleteWarning.item.name}" will also remove all instances 
+              of this activity from your schedule grid.
+            </p>
+            <div className="modal-buttons">
+              <button 
+                className="cancel-btn"
+                onClick={() => setShowDeleteWarning(null)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="delete-btn"
+                onClick={() => confirmDelete(showDeleteWarning.index)}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

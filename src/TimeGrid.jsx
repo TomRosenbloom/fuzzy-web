@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './TimeGrid.css';
 
 export default function TimeGrid({ 
@@ -10,6 +10,30 @@ export default function TimeGrid({
 }) {
   const [assignments, setAssignments] = useState({});  // Store cell assignments
   const [contextMenu, setContextMenu] = useState(null);
+
+  // Add useEffect to watch for activity changes
+  useEffect(() => {
+    // Update all assignments when activities change
+    setAssignments(prev => {
+      const newAssignments = { ...prev };
+      Object.keys(newAssignments).forEach(key => {
+        const assignment = newAssignments[key];
+        // Find the updated activity
+        const updatedActivity = activities.find(a => a.name === assignment.name);
+        if (updatedActivity) {
+          // Update the assignment with the new color
+          newAssignments[key] = {
+            ...assignment,
+            color: updatedActivity.color
+          };
+        } else {
+          // If activity no longer exists, remove the assignment
+          delete newAssignments[key];
+        }
+      });
+      return newAssignments;
+    });
+  }, [activities]);
 
   // Convert blockSize to minutes for easier calculations
   const blockSizeInMinutes = {

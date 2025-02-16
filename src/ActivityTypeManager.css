@@ -131,6 +131,8 @@
   }
   
   .saved-item {
+    position: relative;
+    padding-right: 24px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -180,4 +182,120 @@
     outline: none;
     border-color: #666;
     box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+  }
+
+  .item-menu-icon {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.7;
+    cursor: pointer;
+    padding: 0 4px;
+  }
+  
+  .item-menu-icon:hover {
+    opacity: 1;
+  }
+  
+  .context-menu {
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    padding: 4px 0;
+    min-width: 150px;
+    z-index: 1000;
+  }
+  
+  .context-menu-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .context-menu-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .color-picker {
+    position: relative;
+  }
+  
+  .color-options {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    display: none;
+  }
+  
+  .color-picker:hover .color-options {
+    display: grid;
+  }
+  
+  .color-option {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  
+  .color-option:hover {
+    opacity: 0.8;
+  }
+  
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 20px;
+  }
+  
+  .modal-buttons button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .cancel-btn {
+    background: #f5f5f5;
+  }
+  
+  .delete-btn {
+    background: #ff4444;
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background: #ff2222;
   }
