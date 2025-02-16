@@ -13,7 +13,7 @@ function App() {
   const [selectedBlockSize, setSelectedBlockSize] = useState("");
   const [selectedStartTime, setSelectedStartTime] = useState("");
 
-  const [fuzziness, setFuzziness] = useState(30);
+  const [fuzziness, setFuzziness] = useState(0);
   const handleFuzzinessChange = (event) => {
     setFuzziness(Number(event.target.value)); // Convert string to number
   };
@@ -97,6 +97,7 @@ function App() {
             activities={activities}
             selectedActivity={selectedActivity}
             onActivitySelect={setSelectedActivity}
+            fuzziness={fuzziness}
           />
         </div>
       </div>

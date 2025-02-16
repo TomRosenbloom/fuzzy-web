@@ -6,8 +6,11 @@ export default function TimeGrid({
   startTime, 
   activities, 
   selectedActivity, 
-  onActivitySelect 
+  onActivitySelect,
+  fuzziness = 0  // in minutes
 }) {
+  console.log('TimeGrid received fuzziness:', fuzziness);
+
   const [assignments, setAssignments] = useState({});  // Store cell assignments
   const [contextMenu, setContextMenu] = useState(null);
   const [duplicateWarning, setDuplicateWarning] = useState(null);
@@ -37,12 +40,15 @@ export default function TimeGrid({
     });
   }, [activities]);
 
-  // Convert blockSize to minutes for easier calculations
+  // Convert blockSize string to minutes
   const blockSizeInMinutes = {
     '30 minutes': 30,
     '1 hour': 60,
     '2 hours': 120
-  }[blockSize] || 60;  // default to 1 hour
+  }[blockSize] || 60;
+
+  // Calculate cell height (30px per hour)
+  const cellHeight = (blockSizeInMinutes / 60) * 60;
 
   // Convert startTime string to minutes from midnight
   const getStartMinutes = (timeStr) => {
@@ -219,9 +225,38 @@ export default function TimeGrid({
     }
   };
 
+  const getFuzzyBackground = (color, fuzzinessMinutes) => {
+    console.log('getFuzzyBackground called with:', { color, fuzzinessMinutes, blockSizeInMinutes });
+    
+    // Convert minutes to percentage
+    const fuzzinessPercent = Math.min((fuzzinessMinutes / blockSizeInMinutes) * 100, 100);
+    
+    if (fuzzinessPercent === 0) return color;
+    
+    // Calculate gradient stops based on fuzziness percentage
+    const gradientSize = Math.min(fuzzinessPercent * 2, 100); // More pronounced vertical fade
+    
+    const gradient = `linear-gradient(
+      to bottom,
+      ${color}00 0%,
+      ${color} ${gradientSize}%,
+      ${color} ${100 - gradientSize}%,
+      ${color}00 100%
+    )`;
+
+    console.log('Generated gradient:', gradient);
+    return gradient;
+  };
+
   return (
     <>
-      <div className="time-grid-container" onClick={handleClick}>
+      <div 
+        className="time-grid-container" 
+        onClick={handleClick}
+        style={{
+          '--cell-height': `${cellHeight}px`
+        }}
+      >
         {/* Time column */}
         <div className="time-column">
           <div className="header-cell"></div>
@@ -243,9 +278,10 @@ export default function TimeGrid({
                 <div 
                   key={slotIndex} 
                   className={`grid-cell ${assignment ? 'assigned' : ''}`}
-                  style={{
-                    backgroundColor: assignment ? assignment.color : undefined
-                  }}
+                  style={assignment ? {
+                    background: getFuzzyBackground(assignment.color, fuzziness),
+                    backgroundColor: 'white'  // Ensure white base for gradient
+                  } : {}}
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, day, timeSlot)}
                   data-time={timeSlot}

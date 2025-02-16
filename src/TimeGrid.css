@@ -43,14 +43,11 @@
 }
 
 .time-cell {
-  height: 40px;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  height: var(--cell-height, 60px);  /* Match grid-cell height */
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-bottom: 1px solid #eee;
-  color: #666;
-  white-space: nowrap;
-  padding: 0 8px;
 }
 
 .grid-cell {
@@ -58,11 +55,13 @@
   display: flex;
   align-items: center;
   padding: 0 8px;
-  height: 40px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
   transition: all 0.2s ease;
+  background-color: white;
   overflow: hidden;
+  /* Set height based on block size */
+  height: var(--cell-height, 60px);  /* Default 60px for 1 hour */
 }
 
 .grid-cell.assigned {
