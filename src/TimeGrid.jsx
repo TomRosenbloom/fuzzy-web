@@ -9,7 +9,6 @@ export default function TimeGrid({
   onActivitySelect,
   fuzziness = 0  // in minutes
 }) {
-  console.log('TimeGrid received fuzziness:', fuzziness);
 
   const [assignments, setAssignments] = useState({});  // Store cell assignments
   const [contextMenu, setContextMenu] = useState(null);
@@ -39,6 +38,21 @@ export default function TimeGrid({
       return newAssignments;
     });
   }, [activities]);
+
+  // Add useEffect to watch for fuzziness changes
+  useEffect(() => {
+    // Update all assignments when fuzziness changes
+    setAssignments(prev => {
+      const newAssignments = { ...prev };
+      Object.keys(newAssignments).forEach(key => {
+        newAssignments[key] = {
+          ...newAssignments[key],
+          fuzziness: fuzziness
+        };
+      });
+      return newAssignments;
+    });
+  }, [fuzziness]);
 
   // Convert blockSize string to minutes
   const blockSizeInMinutes = {
@@ -134,7 +148,10 @@ export default function TimeGrid({
             if (!data.isDuplicating) {
               delete newAssignments[data.cellKey];
             }
-            newAssignments[cellKey] = data.assignment;
+            newAssignments[cellKey] = {
+              ...data.assignment,
+              fuzziness: fuzziness  // Ensure new assignment gets current fuzziness
+            };
             return newAssignments;
           });
         }
@@ -143,7 +160,10 @@ export default function TimeGrid({
         if (!assignments[cellKey]) {
           setAssignments(prev => ({
             ...prev,
-            [cellKey]: data
+            [cellKey]: {
+              ...data,
+              fuzziness: fuzziness  // Ensure new assignment gets current fuzziness
+            }
           }));
         }
       }
@@ -226,26 +246,21 @@ export default function TimeGrid({
   };
 
   const getFuzzyBackground = (color, fuzzinessMinutes) => {
-    console.log('getFuzzyBackground called with:', { color, fuzzinessMinutes, blockSizeInMinutes });
-    
     // Convert minutes to percentage
     const fuzzinessPercent = Math.min((fuzzinessMinutes / blockSizeInMinutes) * 100, 100);
     
     if (fuzzinessPercent === 0) return color;
     
     // Calculate gradient stops based on fuzziness percentage
-    const gradientSize = Math.min(fuzzinessPercent * 2, 100); // More pronounced vertical fade
+    const gradientSize = Math.min(fuzzinessPercent * 2, 100);
     
-    const gradient = `linear-gradient(
+    return `linear-gradient(
       to bottom,
-      ${color}00 0%,
+      transparent 0%,
       ${color} ${gradientSize}%,
       ${color} ${100 - gradientSize}%,
-      ${color}00 100%
+      transparent 100%
     )`;
-
-    console.log('Generated gradient:', gradient);
-    return gradient;
   };
 
   return (
@@ -279,8 +294,7 @@ export default function TimeGrid({
                   key={slotIndex} 
                   className={`grid-cell ${assignment ? 'assigned' : ''}`}
                   style={assignment ? {
-                    background: getFuzzyBackground(assignment.color, fuzziness),
-                    backgroundColor: 'white'  // Ensure white base for gradient
+                    background: getFuzzyBackground(assignment.color, fuzziness)
                   } : {}}
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, day, timeSlot)}
@@ -300,18 +314,18 @@ export default function TimeGrid({
                           className="cell-handle move"
                           draggable="true"
                           onDragStart={(e) => handleDragStart(e, day, timeSlot, false)}
-                          title="Drag to move"
+                          data-tooltip="Drag to move"
                         />
                         <span 
                           className="cell-handle duplicate"
                           draggable="true"
                           onDragStart={(e) => handleDragStart(e, day, timeSlot, true)}
-                          title="Drag to duplicate"
+                          data-tooltip="Drag to duplicate"
                         />
                         <span 
                           className="cell-menu-icon"
                           onClick={(e) => handleMenuClick(e, day, timeSlot)}
-                          title="More options"
+                          data-tooltip="More options"
                         />
                       </div>
                     </>
