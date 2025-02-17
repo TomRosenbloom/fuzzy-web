@@ -4,7 +4,7 @@ import './App.css'
 import Dropdown from "./Dropdown"; 
 import FuzzinessSlider from './FuzzinessSlider';
 import OverlapSlider from './OverlapSlider';
-import ItemManager from './ActivityTypeManager';
+import ActivityTypeManager from './ActivityTypeManager';
 import TimeGrid from './TimeGrid';
 
 
@@ -89,7 +89,7 @@ function App() {
 
       <div className="row">
         <div className="whole-row">
-          <ItemManager onActivitiesChange={handleActivitiesChange} />
+          <ActivityTypeManager onActivitiesChange={handleActivitiesChange} />
         </div>
       </div>
 

@@ -211,6 +211,7 @@ export default function ItemManager({ onActivitiesChange }) {
             left: itemContextMenu.x,
           }}
           onClick={e => e.stopPropagation()}
+          onMouseLeave={() => setItemContextMenu(null)}
         >
           <div className="context-menu-item color-picker">
             Change Color

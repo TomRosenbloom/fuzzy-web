@@ -49,7 +49,8 @@
   border-bottom: 1px solid #eee;
   height: var(--cell-height, 60px);
   display: flex;
-  align-items: center;  /* Center vertically */
+  align-items: flex-start;  /* Align to top */
+  padding-top: 4px;  /* Add some padding from the top */
 }
 
 .grid-cell {
@@ -139,6 +140,9 @@
   padding: 8px 12px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  text-align: left;  /* Explicitly set left alignment */
+  display: flex;     /* Use flex for better alignment */
+  align-items: center;
 }
 
 .context-menu-item:hover {
@@ -201,7 +205,7 @@
   padding: 2px;
   border-radius: 3px;
   background: rgba(255, 255, 255, 0.9);
-  font-size: 18px;
+  font-size: 38px;
   width: 24px;
   height: 24px;
   display: flex;
