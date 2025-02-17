@@ -14,8 +14,8 @@ function App() {
   const [selectedStartTime, setSelectedStartTime] = useState("");
 
   const [fuzziness, setFuzziness] = useState(0);
-  const handleFuzzinessChange = (event) => {
-    setFuzziness(Number(event.target.value)); // Convert string to number
+  const handleFuzzinessChange = (value) => {
+    setFuzziness(value);  // FuzzinessSlider now passes the value directly
   };
 
   const [overlap, setOverlap] = useState(0);
@@ -64,7 +64,11 @@ function App() {
           <p>Fuzziness:</p>
         </div>
         <div className="input">
-          <FuzzinessSlider value={fuzziness} onChange={handleFuzzinessChange} />
+          <FuzzinessSlider 
+            value={fuzziness} 
+            onChange={handleFuzzinessChange}
+            blockSize={selectedBlockSize}
+          />
         </div>
         <div className="output">
           <p>{fuzziness} minutes</p>

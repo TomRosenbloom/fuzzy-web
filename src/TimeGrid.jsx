@@ -1,5 +1,27 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import './TimeGrid.css';
+
+function Tooltip({ text, x, y, show }) {
+  if (!show) return null;
+  
+  return ReactDOM.createPortal(
+    <div 
+      className="tooltip-portal"
+      style={{
+        position: 'fixed',
+        top: y,
+        left: x,
+        transform: 'translate(-50%, -120%)',
+        zIndex: 100000,
+        pointerEvents: 'none'
+      }}
+    >
+      {text}
+    </div>,
+    document.body
+  );
+}
 
 export default function TimeGrid({ 
   blockSize, 
@@ -14,6 +36,7 @@ export default function TimeGrid({
   const [contextMenu, setContextMenu] = useState(null);
   const [duplicateWarning, setDuplicateWarning] = useState(null);
   const [selectedDays, setSelectedDays] = useState({});
+  const [tooltip, setTooltip] = useState({ show: false, text: '', x: 0, y: 0 });
 
   // Add useEffect to watch for activity changes
   useEffect(() => {
@@ -246,8 +269,12 @@ export default function TimeGrid({
   };
 
   const getFuzzyBackground = (color, fuzzinessMinutes) => {
+    // Limit fuzziness to 25% of block size
+    const maxFuzziness = blockSizeInMinutes * 0.25;
+    const limitedFuzziness = Math.min(fuzzinessMinutes, maxFuzziness);
+    
     // Convert minutes to percentage
-    const fuzzinessPercent = Math.min((fuzzinessMinutes / blockSizeInMinutes) * 100, 100);
+    const fuzzinessPercent = Math.min((limitedFuzziness / blockSizeInMinutes) * 100, 100);
     
     if (fuzzinessPercent === 0) return color;
     
@@ -262,6 +289,33 @@ export default function TimeGrid({
       transparent 100%
     )`;
   };
+
+  const handleHandleMouseEnter = (e, text) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTooltip({
+      show: true,
+      text,
+      x: rect.left + rect.width / 2,
+      y: rect.top
+    });
+  };
+
+  const handleHandleMouseLeave = () => {
+    setTooltip({ show: false, text: '', x: 0, y: 0 });
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      const handles = document.querySelectorAll('.cell-handle');
+      handles.forEach(handle => {
+        handle.style.setProperty('--tooltip-y', `${e.clientY - 20}px`);
+        handle.style.setProperty('--tooltip-x', `${e.clientX}px`);
+      });
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    return () => document.removeEventListener('mousemove', handleMouseMove);
+  }, []);
 
   return (
     <>
@@ -314,18 +368,21 @@ export default function TimeGrid({
                           className="cell-handle move"
                           draggable="true"
                           onDragStart={(e) => handleDragStart(e, day, timeSlot, false)}
-                          data-tooltip="Drag to move"
+                          onMouseEnter={(e) => handleHandleMouseEnter(e, "Drag to move")}
+                          onMouseLeave={handleHandleMouseLeave}
                         />
                         <span 
                           className="cell-handle duplicate"
                           draggable="true"
                           onDragStart={(e) => handleDragStart(e, day, timeSlot, true)}
-                          data-tooltip="Drag to duplicate"
+                          onMouseEnter={(e) => handleHandleMouseEnter(e, "Drag to duplicate")}
+                          onMouseLeave={handleHandleMouseLeave}
                         />
                         <span 
                           className="cell-menu-icon"
                           onClick={(e) => handleMenuClick(e, day, timeSlot)}
-                          data-tooltip="More options"
+                          onMouseEnter={(e) => handleHandleMouseEnter(e, "More options")}
+                          onMouseLeave={handleHandleMouseLeave}
                         />
                       </div>
                     </>
@@ -344,8 +401,9 @@ export default function TimeGrid({
           style={{
             position: 'fixed',
             top: contextMenu.y,
-            left: contextMenu.x,
+            left: contextMenu.x
           }}
+          onMouseLeave={() => setContextMenu(null)}
         >
           <div 
             className="context-menu-item"
@@ -416,6 +474,7 @@ export default function TimeGrid({
           </div>
         </div>
       )}
+      <Tooltip {...tooltip} />
     </>
   );
 } 

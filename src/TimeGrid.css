@@ -1,5 +1,8 @@
 .time-grid-container {
   display: flex;
+  position: relative;
+  isolation: isolate;  /* Create new stacking context */
+  z-index: 1;
   overflow-y: auto;
   max-height: 80vh;
   border: 1px solid #ccc;
@@ -21,6 +24,9 @@
 
 .day-column {
   flex: 1;
+  position: relative;
+  isolation: isolate;  /* Create new stacking context */
+  z-index: auto;  /* Remove z-index to prevent stacking context issues */
   min-width: 100px;
   border-right: 1px solid #eee;
 }
@@ -43,14 +49,14 @@
   border-bottom: 1px solid #eee;
   height: var(--cell-height, 60px);
   display: flex;
-  align-items: flex-start;
-  padding-top: 4px;
+  align-items: center;  /* Center vertically */
 }
 
 .grid-cell {
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: center;  /* Center vertically */
+  justify-content: center;  /* Center horizontally */
   padding: 0 8px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
@@ -58,10 +64,11 @@
   background-color: white;
   overflow: hidden;
   height: var(--cell-height, 60px);
+  z-index: auto;  /* Remove z-index to prevent stacking context issues */
 }
 
 .grid-cell.assigned {
-  cursor: grab;
+  z-index: 1;  /* Lower z-index for better stacking */
 }
 
 .grid-cell.assigned:active {
@@ -78,6 +85,10 @@
   margin: 0;
   color: white;
   text-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  display: flex;  /* Add flex display */
+  align-items: center;  /* Center vertically */
+  justify-content: center;  /* Center horizontally */
+  height: 100%;  /* Take full height */
 }
 
 .saved-item {
@@ -147,6 +158,7 @@
   background: linear-gradient(to right, transparent, var(--cell-color) 20%);
   padding-left: 20px;
   padding-right: 4px;
+  z-index: 5;
 }
 
 .grid-cell.assigned:hover .cell-controls {
@@ -166,30 +178,11 @@
   align-items: center;
   justify-content: center;
   user-select: none;
+  z-index: 10000;  /* Very high z-index */
 }
 
 .cell-handle::before {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 4px 8px;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  font-size: 12px;
-  white-space: nowrap;
-  border-radius: 4px;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.15s ease;  /* Quick fade in */
-  pointer-events: none;
-  margin-bottom: 4px;
-}
-
-.cell-handle:hover::before {
-  opacity: 1;
-  visibility: visible;
+  display: none;
 }
 
 .cell-handle.move::after {
@@ -288,4 +281,27 @@
 /* Ensure the background color shows through the gradient */
 .grid-cell.assigned {
   background-blend-mode: multiply;  /* This helps blend the gradient with the background color */
+}
+
+[data-tooltip]:hover::after {
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.tooltip-portal {
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  animation: fadeIn 0.15s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 } 
