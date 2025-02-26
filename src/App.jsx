@@ -3,7 +3,6 @@ import './App.css'
 
 import Dropdown from "./Dropdown"; 
 import FuzzinessSlider from './FuzzinessSlider';
-import OverlapSlider from './OverlapSlider';
 import ActivityTypeManager from './ActivityTypeManager';
 import TimeGrid from './TimeGrid';
 
@@ -72,18 +71,6 @@ function App() {
         </div>
         <div className="output">
           <p>{fuzziness} minutes</p>
-        </div>
-      </div>  
-
-      <div className="row">
-        <div className="label">
-          <p>Overlap:</p>
-        </div>
-        <div className="input">
-          <OverlapSlider value={overlap} onChange={handleOverlapChange} />
-        </div>
-        <div className="output">
-          <p>{overlap} minutes</p>
         </div>
       </div>  
 
