@@ -367,14 +367,41 @@ export default function TimeGrid({
                         <span 
                           className="cell-handle move"
                           draggable="true"
-                          onDragStart={(e) => handleDragStart(e, day, timeSlot, false)}
+                          onDragStart={(e) => {
+                            // Set drag data first
+                            e.dataTransfer.setData('application/json', JSON.stringify({
+                              type: 'grid-cell',
+                              cellKey: `${day}-${timeSlot}`,
+                              assignment: assignments[`${day}-${timeSlot}`]
+                            }));
+
+                            // Use the cell itself as drag image, but centered
+                            const cell = e.target.closest('.grid-cell');
+                            const cellWidth = cell.offsetWidth;
+                            const cellHeight = cell.offsetHeight;
+                            e.dataTransfer.setDragImage(cell, cellWidth / 2, cellHeight / 2);
+                          }}
                           onMouseEnter={(e) => handleHandleMouseEnter(e, "Drag to move")}
                           onMouseLeave={handleHandleMouseLeave}
                         />
                         <span 
                           className="cell-handle duplicate"
                           draggable="true"
-                          onDragStart={(e) => handleDragStart(e, day, timeSlot, true)}
+                          onDragStart={(e) => {
+                            // Set drag data first
+                            e.dataTransfer.setData('application/json', JSON.stringify({
+                              type: 'grid-cell',
+                              cellKey: `${day}-${timeSlot}`,
+                              assignment: assignments[`${day}-${timeSlot}`],
+                              isDuplicating: true
+                            }));
+
+                            // Use the cell itself as drag image, but centered
+                            const cell = e.target.closest('.grid-cell');
+                            const cellWidth = cell.offsetWidth;
+                            const cellHeight = cell.offsetHeight;
+                            e.dataTransfer.setDragImage(cell, cellWidth / 2, cellHeight / 2);
+                          }}
                           onMouseEnter={(e) => handleHandleMouseEnter(e, "Drag to duplicate")}
                           onMouseLeave={handleHandleMouseLeave}
                         />

@@ -179,12 +179,28 @@ export default function ItemManager({ onActivitiesChange }) {
           <ul>
             {items.map((item, index) => (
               <li key={index}>
-                <span 
+                <div 
                   className="saved-item" 
                   style={{ backgroundColor: item.color }}
                   draggable="true"
                   onDragStart={(e) => {
+                    // Create drag image
+                    const dragImage = e.target.cloneNode(true);
+                    dragImage.style.width = '100px';  // Match grid cell width
+                    dragImage.style.height = '60px';  // Match grid cell height
+                    dragImage.style.opacity = '0.7';
+                    document.body.appendChild(dragImage);
+                    dragImage.style.position = 'absolute';
+                    dragImage.style.top = '-1000px';  // Hide it off-screen
+
+                    // Set the custom drag image
+                    e.dataTransfer.setDragImage(dragImage, 50, 30);  // Center the drag image under cursor
+
+                    // Set the drag data
                     e.dataTransfer.setData('application/json', JSON.stringify(item));
+
+                    // Cleanup
+                    setTimeout(() => dragImage.remove(), 0);
                   }}
                 >
                   {item.name}
@@ -194,7 +210,7 @@ export default function ItemManager({ onActivitiesChange }) {
                   >
                     ⋮
                   </span>
-                </span>
+                </div>
               </li>
             ))}
           </ul>
