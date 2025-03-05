@@ -104,11 +104,11 @@ export default function ItemManager({ onActivitiesChange }) {
   }, []);
 
   return (
-    <div className="im-container" onClick={() => {
+    <div className="activity-manager" onClick={() => {
       setItemContextMenu(null);
       setShowDeleteWarning(null);
     }}>
-      <h2>Create your activities</h2>
+      <h2>Activity Types</h2>
       <div className="form-group">
         {/* Replace select with input and datalist */}
         <div className="activity-type-manager-input-container">

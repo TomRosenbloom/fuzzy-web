@@ -1,28 +1,18 @@
-import { useState } from "react";
+import React from 'react';
 
-export default function Dropdown({options, onSelect}) {
-  const [selected, setSelected] = useState("");
-
-  const handleChange = (event) => {
-    const value = event.target.value;
-    setSelected(value);
-    onSelect(value); // Pass selected value to parent
-  };
-
+const Dropdown = ({ value, onChange, options }) => {
   return (
-    <div>
-    <select value={selected} onChange={handleChange}>
-      <option value="" disabled>Select an option</option>
-      {options.map((option, index) => (
-        <option key={index} value={option}>
-          {option}
+    <select value={value} onChange={onChange}>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
         </option>
       ))}
     </select>
+  );
+};
 
-    </div>
-  )
-}
+export default Dropdown;
 
 /*
 this is a reusable generic dropdown
