@@ -160,38 +160,41 @@ export default function TimeGrid({
     const cellKey = `${day}-${timeSlot}`;
     
     try {
-      const data = JSON.parse(e.dataTransfer.getData('application/json'));
+      const dataStr = e.dataTransfer.getData('application/json');
+      const data = JSON.parse(dataStr);
       
       if (data.type === 'grid-cell') {
         // Moving or duplicating an existing assignment
-        if (data.cellKey !== cellKey && !assignments[cellKey]) {
-          setAssignments(prev => {
-            const newAssignments = { ...prev };
-            // Only remove the original if not duplicating
-            if (!data.isDuplicating) {
-              delete newAssignments[data.cellKey];
-            }
-            newAssignments[cellKey] = {
-              ...data.assignment,
-              fuzziness: fuzziness  // Ensure new assignment gets current fuzziness
-            };
-            return newAssignments;
-          });
-        }
+        // Remove check for !assignments[cellKey] to allow overwriting
+        setAssignments(prev => {
+          const newAssignments = { ...prev };
+          if (!data.isDuplicating) {
+            delete newAssignments[data.cellKey];
+          }
+          newAssignments[cellKey] = {
+            ...data.assignment,
+            fuzziness: fuzziness
+          };
+          return newAssignments;
+        });
       } else {
         // New assignment from activity list
-        if (!assignments[cellKey]) {
-          setAssignments(prev => ({
-            ...prev,
-            [cellKey]: {
-              ...data,
-              fuzziness: fuzziness  // Ensure new assignment gets current fuzziness
-            }
-          }));
-        }
+        // Remove check for !assignments[cellKey] to allow overwriting
+        setAssignments(prev => ({
+          ...prev,
+          [cellKey]: {
+            name: data.name,
+            color: data.color,
+            fuzziness: fuzziness
+          }
+        }));
       }
+      
+      setDraggedCell(null);
+      setDraggedActivity(null);
+      setDragOverCell(null);
     } catch (error) {
-      console.error('Error parsing dropped data:', error);
+      console.error('Error handling drop:', error);
     }
   };
 
