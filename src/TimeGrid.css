@@ -151,18 +151,18 @@
 
 .cell-controls {
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
+  top: 50%;  /* Center vertically */
+  left: 50%;  /* Center horizontally */
+  transform: translate(-50%, -50%);  /* Adjust for exact center */
   display: flex;
   align-items: center;
   gap: 2px;
   opacity: 0;
   transition: opacity 0.2s ease;
-  background: linear-gradient(to right, transparent, var(--cell-color) 20%);
-  padding-left: 20px;
-  padding-right: 4px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2) 20%);
+  padding: 0 4px;  /* Equal padding on both sides */
   z-index: 5;
+  color: var(--cell-color);
 }
 
 .grid-cell.assigned:hover .cell-controls {
@@ -212,11 +212,12 @@
   align-items: center;
   justify-content: center;
   user-select: none;
+  color: var(--cell-color);  /* Use the cell color variable directly */
 }
 
 .cell-menu-icon::after {
-  content: "⚙";  /* Gear icon for menu */
-  color: #555;
+  content: "⚙";
+  color: color-mix(in srgb, currentColor 70%, black);  /* Darker shade of cell color */
 }
 
 .cell-menu-icon::before {
