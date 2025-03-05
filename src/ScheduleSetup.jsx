@@ -90,7 +90,7 @@ const ScheduleSetup = ({
             <input
               type="range"
               min="0"
-              max={maxFuzziness}
+              max={60}
               value={fuzziness}
               onChange={(e) => handleFuzzinessChange(Number(e.target.value))}
               className="fuzziness-slider"

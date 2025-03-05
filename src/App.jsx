@@ -1,8 +1,6 @@
 import React, { useState } from 'react'
 import './App.css'
 
-import Dropdown from "./Dropdown"; 
-import FuzzinessSlider from './FuzzinessSlider';
 import ActivityTypeManager from './ActivityTypeManager';
 import TimeGrid from './TimeGrid';
 import ScheduleSetup from './ScheduleSetup';
