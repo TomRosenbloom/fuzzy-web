@@ -75,7 +75,6 @@ ul.activities {
 .activity-manager select,
 .activity-manager input {
   font-size: 0.9rem;
-  padding: 4px 8px;  /* Smaller padding */
 }
 
 .schedule-setup .row {

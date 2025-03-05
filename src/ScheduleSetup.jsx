@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Dropdown from './Dropdown';
 
 const ScheduleSetup = ({ 
@@ -9,6 +9,8 @@ const ScheduleSetup = ({
   onStartTimeChange, 
   onFuzzinessChange 
 }) => {
+  const [showWarning, setShowWarning] = useState(false);
+
   const blockSizeOptions = [
     { value: '30 minutes', label: '30 minutes' },
     { value: '1 hour', label: '1 hour' },
@@ -29,6 +31,26 @@ const ScheduleSetup = ({
     { value: '10:00 AM', label: '10:00 AM' },
     { value: '11:00 AM', label: '11:00 AM' }
   ];
+
+  // Convert blockSize string to minutes
+  const blockSizeInMinutes = {
+    '30 minutes': 30,
+    '1 hour': 60,
+    '2 hours': 120
+  }[blockSize] || 60;
+
+  // Maximum fuzziness is 25% of block size, but at least 30 minutes
+  const maxFuzziness = Math.max(blockSizeInMinutes * 0.25, 30);
+
+  const handleFuzzinessChange = (newValue) => {
+    if (newValue > blockSizeInMinutes * 0.25) {
+      setShowWarning(true);
+      onFuzzinessChange(blockSizeInMinutes * 0.25);  // Limit to 25%
+    } else {
+      setShowWarning(false);
+      onFuzzinessChange(newValue);
+    }
+  };
 
   return (
     <div className="schedule-setup">
@@ -68,9 +90,9 @@ const ScheduleSetup = ({
             <input
               type="range"
               min="0"
-              max="60"
+              max={maxFuzziness}
               value={fuzziness}
-              onChange={(e) => onFuzzinessChange(Number(e.target.value))}
+              onChange={(e) => handleFuzzinessChange(Number(e.target.value))}
               className="fuzziness-slider"
             />
           </div>
@@ -79,6 +101,24 @@ const ScheduleSetup = ({
           </div>
         </div>
       </div>
+
+      {showWarning && (
+        <div className="modal-overlay" onClick={() => setShowWarning(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <h3>Maximum Fuzziness Reached</h3>
+            <p>
+              For {blockSize} time slots, the maximum fuzziness is limited to{' '}
+              {Math.floor(blockSizeInMinutes * 0.25)} minutes (25% of slot size).
+            </p>
+            <button 
+              className="modal-close-btn"
+              onClick={() => setShowWarning(false)}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

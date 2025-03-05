@@ -108,7 +108,7 @@ export default function ItemManager({ onActivitiesChange }) {
       setItemContextMenu(null);
       setShowDeleteWarning(null);
     }}>
-      <h2>Activity Types</h2>
+      <h2>Create your activity types</h2>
       <div className="form-group">
         {/* Replace select with input and datalist */}
         <div className="activity-type-manager-input-container">
